@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Income & Expenses</h2>
+
+<div class="card p-3 mt-3 mb-4">
+  <h6>Your monthly figures</h6>
+  <form method="POST" action="/profile/update" class="row g-2">
+    <div class="col-md-4">
+      <label class="form-label small">Monthly income (₹)</label>
+      <input type="number" name="monthly_income" min="0" step="1" value="{{ '%.0f'|format(user['monthly_income']) }}" class="form-control" required>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label small">Emergency reserve (₹)</label>
+      <input type="number" name="emergency_reserve" min="0" step="1" value="{{ '%.0f'|format(user['emergency_reserve']) }}" class="form-control" required>
+    </div>
+    <div class="col-md-4 d-flex align-items-end">
+      <button type="submit" class="btn btn-outline-primary">Update</button>
+    </div>
+  </form>
+</div>
+
+<h5>Add an expense</h5>
+<form method="POST" action="/expenses/add" class="row g-2 mb-4">
+  <div class="col-md-2">
+    <input type="number" name="amount" min="1" step="1" class="form-control" placeholder="Amount (₹)" required>
+  </div>
+  <div class="col-md-3">
+    <select name="category" class="form-select" required>
+      <option>Food</option>
+      <option>Rent</option>
+      <option>Transport</option>
+      <option>Education</option>
+      <option>Entertainment</option>
+      <option>Other</option>
+    </select>
+  </div>
+  <div class="col-md-3">
+    <input type="date" name="date" value="{{ today }}" class="form-control" required>
+  </div>
+  <div class="col-md-2 d-flex align-items-center">
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" name="is_essential" id="ess" checked>
+      <label class="form-check-label" for="ess">Essential</label>
+    </div>
+  </div>
+  <div class="col-md-2">
+    <button type="submit" class="btn btn-primary w-100">Add</button>
+  </div>
+</form>
+
+<p><strong>This month's total:</strong> ₹{{ "%.0f"|format(month_total) }}</p>
+
+<table class="table table-bordered align-middle">
+  <thead class="table-light">
+    <tr>
+      <th>Date</th>
+      <th>Category</th>
+      <th>Amount</th>
+      <th>Type</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for e in expenses %}
+    <tr>
+      <td>{{ e['date'] }}</td>
+      <td>{{ e['category'] }}</td>
+      <td>₹{{ "%.0f"|format(e['amount']) }}</td>
+      <td>{{ 'Essential' if e['is_essential'] else 'Non-essential' }}</td>
+      <td>
+        <form method="POST" action="/expenses/{{ e['id'] }}/delete">
+          <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+        </form>
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="5" class="text-center">No expenses yet</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

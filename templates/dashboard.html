@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Welcome, {{ user['name'] }}</h2>
+
+<div class="row mt-3">
+  <div class="col-md-4 mb-3">
+    <div class="card p-3">
+      <h6>Monthly income</h6>
+      <h4>₹{{ "%.0f"|format(a['income']) }}</h4>
+    </div>
+  </div>
+  <div class="col-md-4 mb-3">
+    <div class="card p-3">
+      <h6>Expenses logged</h6>
+      <h4>₹{{ "%.0f"|format(a['total_expenses']) }}</h4>
+    </div>
+  </div>
+  <div class="col-md-4 mb-3">
+    <div class="card p-3">
+      <h6>Emergency reserve</h6>
+      <h4>₹{{ "%.0f"|format(a['reserve']) }}</h4>
+    </div>
+  </div>
+  <div class="col-md-4 mb-3">
+    <div class="card p-3">
+      <h6>You owe</h6>
+      <h4 class="text-danger">₹{{ "%.0f"|format(a['owed']) }}</h4>
+    </div>
+  </div>
+  <div class="col-md-4 mb-3">
+    <div class="card p-3">
+      <h6>Owed to you</h6>
+      <h4 class="text-success">₹{{ "%.0f"|format(a['owed_to_me']) }}</h4>
+    </div>
+  </div>
+  <div class="col-md-4 mb-3">
+    <div class="card p-3 border-primary">
+      <h6>Cash left (estimate)</h6>
+      <h4>₹{{ "%.0f"|format(a['cash_left']) }}</h4>
+    </div>
+  </div>
+</div>
+
+<a href="/loans" class="btn btn-primary mt-2">Go to Loans</a>
+<a href="/recommendation" class="btn btn-outline-primary mt-2">Can I afford to repay?</a>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Repayment Recommendation</h2>
+<p class="text-muted">These figures are estimates. The app only recommends, and you decide.</p>
+
+<div class="row mt-3">
+  <div class="col-md-4 mb-3">
+    <div class="card p-3">
+      <h6>Cash left after expenses and reserve</h6>
+      <h4>₹{{ "%.0f"|format(a['cash_left']) }}</h4>
+    </div>
+  </div>
+  <div class="col-md-4 mb-3">
+    <div class="card p-3">
+      <h6>Safe to repay now</h6>
+      <h4 class="text-success">₹{{ "%.0f"|format(a['safe_to_repay']) }}</h4>
+      <small class="text-muted">out of ₹{{ "%.0f"|format(a['owed']) }} you owe</small>
+    </div>
+  </div>
+  <div class="col-md-4 mb-3">
+    <div class="card p-3">
+      <h6>Safe to spend or lend</h6>
+      <h4 class="text-primary">₹{{ "%.0f"|format(a['safe_to_spend']) }}</h4>
+      <small class="text-muted">after your debts are covered</small>
+    </div>
+  </div>
+</div>
+
+<form method="POST" class="row g-2 mt-2">
+  <div class="col-md-4">
+    <input type="number" name="amount" min="1" step="1" class="form-control" placeholder="Amount you want to repay (₹)" required>
+  </div>
+  <div class="col-md-3">
+    <button type="submit" class="btn btn-primary">Check</button>
+  </div>
+</form>
+
+{% if verdict %}
+<div class="alert {{ 'alert-success' if verdict['ok'] else 'alert-warning' }} mt-3">
+  <strong>₹{{ "%.0f"|format(verdict['amount']) }}:</strong> {{ verdict['message'] }}
+</div>
+{% endif %}
+
+<a href="/dashboard" class="btn btn-outline-secondary mt-3">Back to dashboard</a>
+{% endblock %}
