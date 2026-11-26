@@ -8,6 +8,9 @@ app.secret_key = "finnovators-dev-key"
 
 init_db()
 
+from calendar_view import bp as calendar_bp
+app.register_blueprint(calendar_bp)
+
 
 def current_user():
     uid = session.get("user_id")

@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2 class="mb-0">Money Calendar</h2>
+  <div>
+    <a class="btn btn-outline-primary btn-sm" href="/calendar?year={{ prev_year }}&month={{ prev_month }}">&laquo; Prev</a>
+    <strong class="mx-2">{{ month_name }} {{ year }}</strong>
+    <a class="btn btn-outline-primary btn-sm" href="/calendar?year={{ next_year }}&month={{ next_month }}">Next &raquo;</a>
+  </div>
+</div>
+
+{% if first_danger %}
+<div class="alert alert-warning">
+  <strong>Heads up:</strong> around {{ first_danger['date'] }}, your cash could dip about
+  ₹{{ "%.0f"|format(first_danger['short']) }} into your emergency reserve if everything is paid on time.
+</div>
+{% else %}
+<div class="alert alert-success">Your cash looks safe for all upcoming deadlines (estimate).</div>
+{% endif %}
+
+<div class="row mb-3">
+  <div class="col-md-4 mb-2">
+    <div class="card p-3 border-primary">
+      <h6>Spendable cash now (estimate)</h6>
+      <h4 class="mb-0">₹{{ "%.0f"|format(base_cash) }}</h4>
+    </div>
+  </div>
+  <div class="col-md-4 mb-2">
+    <div class="card p-3 border-danger">
+      <h6>Due from you this month</h6>
+      <h4 class="text-danger mb-0">₹{{ "%.0f"|format(total_to_pay) }}</h4>
+    </div>
+  </div>
+  <div class="col-md-4 mb-2">
+    <div class="card p-3 border-success">
+      <h6>Due to you this month</h6>
+      <h4 class="text-success mb-0">₹{{ "%.0f"|format(total_to_receive) }}</h4>
+    </div>
+  </div>
+</div>
+
+<div class="mb-3">
+  <span class="badge bg-danger">You pay</span>
+  <span class="badge bg-success">You receive</span>
+  <span class="badge bg-dark">Overdue</span>
+  <span class="badge bg-warning text-dark">Danger day</span>
+</div>
+
+<table class="table table-bordered" style="table-layout: fixed;">
+  <thead class="table-light">
+    <tr>
+      {% for d in ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] %}
+      <th class="text-center">{{ d }}</th>
+      {% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for week in weeks %}
+    <tr>
+      {% for day in week %}
+      {% set info = day_info.get(day) %}
+      <td style="height: 120px; vertical-align: top;" class="{{ 'table-primary' if day == today_day else ('table-warning' if info and info['danger'] else '') }}">
+        {% if day != 0 %}
+        <div class="small fw-bold">{{ day }}</div>
+        {% for e in events.get(day, []) %}
+        <div class="badge {{ 'bg-dark' if e['overdue'] else ('bg-danger' if e['kind'] == 'owe' else 'bg-success') }} d-block text-start text-wrap mb-1">
+          {{ e['text'] }} ₹{{ "%.0f"|format(e['left']) }}{% if e['overdue'] %} (overdue){% endif %}
+        </div>
+        {% endfor %}
+        {% if info %}
+        <div class="small {{ 'text-danger fw-bold' if info['danger'] else 'text-muted' }}">
+          Cash ₹{{ "%.0f"|format(info['cash']) }}
+        </div>
+        {% endif %}
+        {% endif %}
+      </td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<p class="text-muted small">Forecast is an estimate: it starts from your income minus this month's expenses and reserve, then applies loan deadlines in date order. Overdue items count from today.</p>
+{% endblock %}

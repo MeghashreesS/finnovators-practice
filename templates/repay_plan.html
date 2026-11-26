@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Best Day to Repay</h2>
+<p class="text-muted">
+  Estimates only. For each loan you owe, the app finds the earliest day you could repay it in full
+  without your cash dropping below your emergency reserve. You decide.
+</p>
+
+<table class="table table-bordered align-middle">
+  <thead class="table-light">
+    <tr>
+      <th>Owed to</th>
+      <th>Amount left</th>
+      <th>Due</th>
+      <th>Best day to repay</th>
+      <th>Safe to repay now</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for p in plans %}
+    <tr>
+      <td>{{ p['name'] }}</td>
+      <td>₹{{ "%.0f"|format(p['left']) }}</td>
+      <td>
+        {{ p['due'] }}
+        {% if p['overdue'] %}<span class="badge bg-dark">overdue</span>{% endif %}
+      </td>
+      <td>
+        {% if p['best'] %}
+        <span class="badge bg-success">{{ p['best'] }}</span>
+        {% else %}
+        <span class="badge bg-warning text-dark">No safe day found</span>
+        {% endif %}
+      </td>
+      <td>₹{{ "%.0f"|format(p['safe_now']) }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="5" class="text-center">You don't owe anyone right now.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<p class="text-muted small">
+  Each loan is checked on its own. If you plan to repay several on the same day, check the total on the Repay? page.
+</p>
+<a href="/calendar" class="btn btn-outline-primary">Back to calendar</a>
+{% endblock %}
